@@ -6,8 +6,11 @@ import { useEffect, useState } from 'react';
 import FullScreenLoader from './../components/FullScreenLoader';
 
 const Dashboard = () => {
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const limit = 6;
 
   const navigate = useNavigate();
 
@@ -16,14 +19,26 @@ const Dashboard = () => {
     logout,
   } = useAuth();
 
-  const { tasks, getTasks, loading, deleteTask } = useTasks();
+  const { meta, tasks, getTasks, loading, deleteTask } = useTasks();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      getTasks({ search, status: statusFilter });
+      setDebouncedSearch(search);
     }, 500);
     return () => clearTimeout(timeout);
-  }, [search, statusFilter]);
+  }, [search]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      getTasks({
+        page,
+        limit: limit,
+        search: debouncedSearch,
+        status: statusFilter,
+      });
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [page, statusFilter, debouncedSearch]);
 
   console.log('Tasks in Dashboard:', tasks);
 
@@ -120,14 +135,11 @@ const Dashboard = () => {
           <header className='h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101622] flex items-center justify-between px-8 shrink-0'>
             <div className='flex-1 max-w-xl'>
               <div className='relative group'>
-                <span className='material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors'>
-                  search
-                </span>
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder='Search tasks...'
-                  className='...'
+                  className='border-0 outline-none bg-slate-100 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 rounded-lg py-2 pl-5 pr-4 w-full focus:ring-2 focus:ring-primary/50 transition-colors'
                 />
               </div>
             </div>
@@ -195,10 +207,7 @@ const Dashboard = () => {
                   key={item.value}
                   onClick={() => {
                     setStatusFilter(item.value);
-                    getTasks({
-                      status: item.value || undefined,
-                      search,
-                    });
+                    setPage(1);
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors
         ${
@@ -297,28 +306,44 @@ const Dashboard = () => {
             {/* Pagination */}
             <div className='flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 dark:border-slate-800 pt-6 pb-12'>
               <p className='text-sm text-slate-500 dark:text-slate-400 font-medium'>
-                Showing 6 of 42 tasks
+                Showing {(page - 1) * meta.limit + 1} –
+                {Math.min(page * meta.limit, meta.totalTasks)} of{' '}
+                {meta.totalTasks} tasks
               </p>
+
               <div className='flex items-center gap-2'>
-                <button className='w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors'>
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => p - 1)}
+                  className='w-9 h-9 flex items-center justify-center rounded-lg border disabled:opacity-50'
+                >
                   <span className='material-symbols-outlined'>
                     chevron_left
                   </span>
                 </button>
-                <button className='w-9 h-9 flex items-center justify-center rounded-lg bg-primary text-white font-bold text-sm'>
-                  1
-                </button>
-                <button className='w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium text-sm transition-colors'>
-                  2
-                </button>
-                <button className='w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium text-sm transition-colors'>
-                  3
-                </button>
-                <span className='px-1 text-slate-400'>...</span>
-                <button className='w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium text-sm transition-colors'>
-                  7
-                </button>
-                <button className='w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors'>
+
+                {Array.from({ length: meta.totalPages }, (_, i) => i + 1).map(
+                  (p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`w-9 h-9 rounded-lg text-sm font-bold
+          ${
+            page === p
+              ? 'bg-primary text-white'
+              : 'border border-slate-200 dark:border-slate-700'
+          }`}
+                    >
+                      {p}
+                    </button>
+                  ),
+                )}
+
+                <button
+                  disabled={page === meta.totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                  className='w-9 h-9 flex items-center justify-center rounded-lg border disabled:opacity-50'
+                >
                   <span className='material-symbols-outlined'>
                     chevron_right
                   </span>
