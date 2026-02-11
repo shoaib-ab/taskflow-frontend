@@ -19,8 +19,11 @@ const Dashboard = () => {
   const { tasks, getTasks, loading, deleteTask } = useTasks();
 
   useEffect(() => {
-    getTasks();
-  }, []);
+    const timeout = setTimeout(() => {
+      getTasks({ search, status: statusFilter });
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [search, statusFilter]);
 
   console.log('Tasks in Dashboard:', tasks);
 
@@ -122,10 +125,7 @@ const Dashboard = () => {
                 </span>
                 <input
                   value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    getTasks({ search: e.target.value, status: statusFilter });
-                  }}
+                  onChange={(e) => setSearch(e.target.value)}
                   placeholder='Search tasks...'
                   className='...'
                 />
@@ -183,7 +183,7 @@ const Dashboard = () => {
               </button>
             </div>
 
-            {/* Filters */}
+            {/* Status Filters */}
             <div className='flex flex-wrap items-center gap-3 mb-8'>
               {[
                 { label: 'All', value: '' },
@@ -195,15 +195,17 @@ const Dashboard = () => {
                   key={item.value}
                   onClick={() => {
                     setStatusFilter(item.value);
-                    getTasks(item.value ? { status: item.value } : {});
+                    getTasks({
+                      status: item.value || undefined,
+                      search,
+                    });
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors
         ${
           statusFilter === item.value
             ? 'bg-primary text-white'
             : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
-        }
-      `}
+        }`}
                 >
                   {item.label}
                 </button>
