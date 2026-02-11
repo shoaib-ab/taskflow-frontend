@@ -2,10 +2,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 import { useAuth } from '../context/AuthContext';
 import { useTasks } from '../context/TaskContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import FullScreenLoader from './../components/FullScreenLoader';
 
 const Dashboard = () => {
+  const [statusFilter, setStatusFilter] = useState('');
+  const [search, setSearch] = useState('');
+
   const navigate = useNavigate();
 
   const {
@@ -118,9 +121,13 @@ const Dashboard = () => {
                   search
                 </span>
                 <input
-                  className='w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary transition-all dark:text-white placeholder:text-slate-400'
-                  placeholder='Search tasks, projects, or team members...'
-                  type='text'
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    getTasks({ search: e.target.value, status: statusFilter });
+                  }}
+                  placeholder='Search tasks...'
+                  className='...'
                 />
               </div>
             </div>
@@ -178,24 +185,29 @@ const Dashboard = () => {
 
             {/* Filters */}
             <div className='flex flex-wrap items-center gap-3 mb-8'>
-              {['Priority', 'Due Date', 'Assignee'].map((filter, idx) => (
+              {[
+                { label: 'All', value: '' },
+                { label: 'Pending', value: 'PENDING' },
+                { label: 'In Progress', value: 'IN_PROGRESS' },
+                { label: 'Completed', value: 'DONE' },
+              ].map((item) => (
                 <button
-                  key={filter}
-                  className='flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors'
+                  key={item.value}
+                  onClick={() => {
+                    setStatusFilter(item.value);
+                    getTasks(item.value ? { status: item.value } : {});
+                  }}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors
+        ${
+          statusFilter === item.value
+            ? 'bg-primary text-white'
+            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
+        }
+      `}
                 >
-                  <span className='material-symbols-outlined text-lg'>
-                    {['filter_alt', 'calendar_today', 'person'][idx]}
-                  </span>
-                  <span>{filter}</span>
-                  <span className='material-symbols-outlined text-lg text-slate-400'>
-                    expand_more
-                  </span>
+                  {item.label}
                 </button>
               ))}
-              <div className='h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1'></div>
-              <button className='flex items-center gap-2 px-3 py-1.5 text-primary text-sm font-bold hover:underline'>
-                <span>Clear All Filters</span>
-              </button>
             </div>
 
             {/* Task Grid */}

@@ -7,10 +7,12 @@ export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const getTasks = async () => {
+  const getTasks = async (filters = {}) => {
     try {
       setLoading(true);
-      const response = await api.get('/tasks/mytasks');
+
+      const query = new URLSearchParams(filters).toString();
+      const response = await api.get(`/tasks/mytasks?${query}`);
       setTasks(response.data);
     } catch (error) {
       throw error;
