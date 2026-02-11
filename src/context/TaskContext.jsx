@@ -6,13 +6,23 @@ const TaskContext = createContext();
 export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [meta, setMeta] = useState({
+    page: 1,
+    totalPages: 1,
+    totalTasks: 0,
+    limit: 10,
+  });
 
-  const getTasks = async ({ search = '', status = 'ALL' } = {}) => {
+  const getTasks = async (params = {}) => {
     try {
       setLoading(true);
 
-      const response = await api.get('/tasks/mytasks', {
-        params: { search, status },
+      const response = await api.get('/tasks/mytasks', { params });
+      setMeta({
+        page: response.data.page,
+        totalPages: response.data.totalPages,
+        totalTasks: response.data.totalTasks,
+        limit: response.data.limit,
       });
       setTasks(response.data);
     } catch (error) {
@@ -28,7 +38,7 @@ export const TaskProvider = ({ children }) => {
       await api.post('/tasks', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      await getTasks();
+      // await getTasks();
     } catch (error) {
       throw error;
     } finally {
@@ -64,7 +74,15 @@ export const TaskProvider = ({ children }) => {
 
   return (
     <TaskContext.Provider
-      value={{ tasks, loading, getTasks, addTask, updateTask, deleteTask }}
+      value={{
+        meta,
+        tasks,
+        loading,
+        getTasks,
+        addTask,
+        updateTask,
+        deleteTask,
+      }}
     >
       {children}
     </TaskContext.Provider>
