@@ -1,6 +1,6 @@
 import '../index.css';
 
-const Spinner = ({ size = 24, color = '#ffffff' }) => {
+const Spinner = ({ size = 32, color = '#2563eb' }) => {
   return (
     <span
       style={{

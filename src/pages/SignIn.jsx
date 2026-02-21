@@ -23,16 +23,13 @@ const SignIn = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       navigate('/dashboard');
     } catch (error) {
-      alert(error.response?.data?.message || 'Login failed');
+    
+      alert(error.message|| 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // Handle Google sign in logic here
-    console.log('Sign in with Google');
-  };
 
   return (
     <div>
@@ -141,33 +138,6 @@ const SignIn = () => {
             </button>
           </form>
 
-          {/* Social Auth Divider */}
-          <div className='relative my-8'>
-            <div className='absolute inset-0 flex items-center'>
-              <div className='w-full border-t border-gray-200 dark:border-gray-700'></div>
-            </div>
-            <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-white dark:bg-[#1a212f] px-2 text-gray-500'>
-                Or continue with
-              </span>
-            </div>
-          </div>
-
-          {/* Social Buttons */}
-          <div className='grid grid-cols-1 gap-3'>
-            <button
-              type='button'
-              onClick={handleGoogleSignIn}
-              className='flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a212f] px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors'
-            >
-              <img
-                src='https://lh3.googleusercontent.com/aida-public/AB6AXuBhMar8liXbRAkI2R2Y3Z_d3LcGwNqJVXtwSkpemreYs3wsUzJkSCssxn7RigoUKs57pr8CLy_zoSfznVBDFMJlEYZ8kUJO1MaXZUIeU3aGrM79Mw3MQVGioS5zuVnwGe1daHoG6lshlxmXtd_mcNEnrfBU9fr8xjKBLYB9NG5WOTV-xlPFiw-NT5lNwjeB0YD42RkG-d0WvuBkP3qyEZFe41UL7EnYcdG8d8C8WXR1rnm5eG27qGBmcDymlLuYDQFHMHeBSrQxZuw'
-                alt='Google logo'
-                className='h-5 w-5'
-              />
-              <span>Sign in with Google</span>
-            </button>
-          </div>
 
           {/* Signup Link */}
           <p className='mt-8 text-center text-sm text-gray-600 dark:text-gray-400'>
