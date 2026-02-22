@@ -15,7 +15,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const {
-    user: { name, email },
+    user: { name, email, role },
     logout,
   } = useAuth();
 
@@ -89,6 +89,55 @@ const Dashboard = () => {
               </a>
             ))}
 
+            {/* Admin + Manager nav links */}
+            {(role === 'admin' || role === 'manager') && (
+              <Link
+                to='/manager-dashboard'
+                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
+              >
+                <span className='material-symbols-outlined'>analytics</span>
+                <span>Manager Dashboard</span>
+              </Link>
+            )}
+            {(role === 'admin' || role === 'manager') && (
+              <Link
+                to='/analytics'
+                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
+              >
+                <span className='material-symbols-outlined'>monitoring</span>
+                <span>Analytics</span>
+              </Link>
+            )}
+            {(role === 'admin' || role === 'manager') && (
+              <Link
+                to='/team-tasks'
+                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
+              >
+                <span className='material-symbols-outlined'>assignment</span>
+                <span>Team Tasks</span>
+              </Link>
+            )}
+            {(role === 'admin' || role === 'manager') && (
+              <Link
+                to='/teams'
+                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
+              >
+                <span className='material-symbols-outlined'>groups</span>
+                <span>Teams</span>
+              </Link>
+            )}
+            {role === 'admin' && (
+              <Link
+                to='/admin/users'
+                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
+              >
+                <span className='material-symbols-outlined'>
+                  manage_accounts
+                </span>
+                <span>User Management</span>
+              </Link>
+            )}
+
             <div className='pt-8 pb-2'>
               <p className='px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider'>
                 Teams
@@ -104,6 +153,13 @@ const Dashboard = () => {
                 <span>{['Engineering', 'Design Team'][idx]}</span>
               </a>
             ))}
+            <Link
+              to='/profile'
+              className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
+            >
+              <span className='material-symbols-outlined'>manage_accounts</span>
+              <span>Profile &amp; Settings</span>
+            </Link>
             <a
               className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
               href='#'
@@ -248,6 +304,17 @@ const Dashboard = () => {
                         </span>
                       </div>
                       <div className='absolute top-3 right-3 opacity-0  group-hover:opacity-100 transition-opacity flex gap-2'>
+                        <button
+                          onClick={() => navigate(`/task/${id}`)}
+                          className='p-1.5 bg-white rounded-lg shadow-sm 
+                          group-hover:bg-white dark:group-hover:bg-slate-700
+                          hover:text-primary transition-colors'
+                          title='View details'
+                        >
+                          <span className='material-symbols-outlined text-base'>
+                            open_in_new
+                          </span>
+                        </button>
                         <button
                           onClick={() => navigate(`/edit-task/${id}`)}
                           className='p-1.5 bg-white rounded-lg shadow-sm 
