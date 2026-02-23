@@ -38,7 +38,7 @@ export const TaskProvider = ({ children }) => {
       await api.post('/tasks', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      // await getTasks();
+      await getTasks();
     } catch (error) {
       throw error;
     } finally {

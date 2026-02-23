@@ -1,9 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 import { useAuth } from '../context/AuthContext';
+import Sidebar from '../components/Sidebar';
 import { useTasks } from '../context/TaskContext';
 import { useEffect, useState } from 'react';
 import FullScreenLoader from './../components/FullScreenLoader';
+import api from '../api/axios';
 
 const Dashboard = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -11,13 +13,21 @@ const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const limit = 6;
+  const [myTeams, setMyTeams] = useState([]);
 
   const navigate = useNavigate();
 
   const {
     user: { name, email, role },
-    logout,
   } = useAuth();
+
+  // Fetch member's teams
+  useEffect(() => {
+    api
+      .get('/teams/mine')
+      .then((res) => setMyTeams(res.data.teams ?? []))
+      .catch(() => {});
+  }, []);
 
   const { meta, tasks, getTasks, loading, deleteTask } = useTasks();
 
@@ -57,133 +67,7 @@ const Dashboard = () => {
       <div className='flex h-screen overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300'>
         <ThemeToggle />
 
-        {/* Sidebar Navigation */}
-        <aside className='w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101622] flex flex-col shrink-0'>
-          <div className='p-6 flex items-center gap-3'>
-            <div className='bg-primary p-1.5 rounded-lg flex items-center justify-center'>
-              <span className='material-symbols-outlined text-white text-2xl'>
-                layers
-              </span>
-            </div>
-            <h1 className='text-xl font-bold tracking-tight text-slate-900 dark:text-white'>
-              TaskMaster
-            </h1>
-          </div>
-
-          <nav className='flex-1 px-4 space-y-1 mt-4'>
-            <a
-              className='flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium transition-colors'
-              href='#'
-            >
-              <span className='material-symbols-outlined'>dashboard</span>
-              <span>All Tasks</span>
-            </a>
-            {['schedule', 'trending_up', 'check_circle'].map((icon, idx) => (
-              <a
-                key={icon}
-                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-                href='#'
-              >
-                <span className='material-symbols-outlined'>{icon}</span>
-                <span>{['Pending', 'In-Progress', 'Completed'][idx]}</span>
-              </a>
-            ))}
-
-            {/* Admin + Manager nav links */}
-            {(role === 'admin' || role === 'manager') && (
-              <Link
-                to='/manager-dashboard'
-                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-              >
-                <span className='material-symbols-outlined'>analytics</span>
-                <span>Manager Dashboard</span>
-              </Link>
-            )}
-            {(role === 'admin' || role === 'manager') && (
-              <Link
-                to='/analytics'
-                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-              >
-                <span className='material-symbols-outlined'>monitoring</span>
-                <span>Analytics</span>
-              </Link>
-            )}
-            {(role === 'admin' || role === 'manager') && (
-              <Link
-                to='/team-tasks'
-                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-              >
-                <span className='material-symbols-outlined'>assignment</span>
-                <span>Team Tasks</span>
-              </Link>
-            )}
-            {(role === 'admin' || role === 'manager') && (
-              <Link
-                to='/teams'
-                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-              >
-                <span className='material-symbols-outlined'>groups</span>
-                <span>Teams</span>
-              </Link>
-            )}
-            {role === 'admin' && (
-              <Link
-                to='/admin/users'
-                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-              >
-                <span className='material-symbols-outlined'>
-                  manage_accounts
-                </span>
-                <span>User Management</span>
-              </Link>
-            )}
-
-            <div className='pt-8 pb-2'>
-              <p className='px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider'>
-                Teams
-              </p>
-            </div>
-            {['groups', 'palette'].map((icon, idx) => (
-              <a
-                key={icon}
-                className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-                href='#'
-              >
-                <span className='material-symbols-outlined'>{icon}</span>
-                <span>{['Engineering', 'Design Team'][idx]}</span>
-              </a>
-            ))}
-            <Link
-              to='/profile'
-              className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-            >
-              <span className='material-symbols-outlined'>manage_accounts</span>
-              <span>Profile &amp; Settings</span>
-            </Link>
-            <a
-              className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-              href='#'
-              onClick={logout}
-            >
-              <span className='material-symbols-outlined'>logout</span>
-              <span>Logout</span>
-            </a>
-          </nav>
-
-          <div className='p-4 border-t border-slate-200 dark:border-slate-800'>
-            <div className='bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/10'>
-              <p className='text-xs font-bold text-primary mb-1 uppercase'>
-                Pro Plan
-              </p>
-              <p className='text-sm text-slate-600 dark:text-slate-300 mb-3'>
-                Upgrade for unlimited team members.
-              </p>
-              <button className='w-full py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors'>
-                Upgrade Now
-              </button>
-            </div>
-          </div>
-        </aside>
+        <Sidebar />
 
         {/* Main Content Area */}
         <main className='flex-1 flex flex-col min-w-0 overflow-hidden'>
@@ -232,6 +116,38 @@ const Dashboard = () => {
 
           {/* Dashboard Content */}
           <div className='flex-1 overflow-y-auto p-8'>
+            {/* My Teams strip ─ only shown when user is in at least one team */}
+            {myTeams.length > 0 && (
+              <div className='mb-8'>
+                <h3 className='text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3'>
+                  My Teams
+                </h3>
+                <div className='flex flex-wrap gap-3'>
+                  {myTeams.map((team) => (
+                    <div
+                      key={team._id}
+                      className='flex items-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 shadow-sm min-w-[200px]'
+                    >
+                      <div className='w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0'>
+                        <span className='material-symbols-outlined text-primary text-lg'>
+                          group
+                        </span>
+                      </div>
+                      <div className='min-w-0'>
+                        <p className='font-semibold text-slate-900 dark:text-white text-sm truncate'>
+                          {team.name}
+                        </p>
+                        <p className='text-xs text-slate-400 truncate'>
+                          Manager: {team.manager?.name ?? '—'} &bull;{' '}
+                          {team.members?.length ?? 0} members
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Action Bar */}
             <div className='flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8'>
               <div>

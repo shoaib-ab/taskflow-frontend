@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
 import FullScreenLoader from '../components/FullScreenLoader';
+import Sidebar from '../components/Sidebar';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -41,7 +42,7 @@ const PAGE_LIMIT = 10;
 
 const AdminUsers = () => {
   const navigate = useNavigate();
-  const { user: currentUser, logout } = useAuth();
+  const { user: currentUser } = useAuth();
 
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
@@ -126,74 +127,7 @@ const AdminUsers = () => {
 
       <div className='flex h-screen overflow-hidden'>
         {/* ── Sidebar ── */}
-        <aside className='w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101622] flex flex-col shrink-0'>
-          <div className='p-6 flex items-center gap-3'>
-            <div className='bg-primary p-1.5 rounded-lg flex items-center justify-center'>
-              <span className='material-symbols-outlined text-white text-2xl'>
-                layers
-              </span>
-            </div>
-            <h1 className='text-xl font-bold tracking-tight text-slate-900 dark:text-white uppercase'>
-              TaskFlow
-            </h1>
-          </div>
-
-          <nav className='flex-1 px-4 space-y-1 mt-4'>
-            <Link
-              to='/dashboard'
-              className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-            >
-              <span className='material-symbols-outlined'>dashboard</span>
-              <span>All Tasks</span>
-            </Link>
-            <Link
-              to='/dashboard'
-              className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-            >
-              <span className='material-symbols-outlined'>schedule</span>
-              <span>Pending</span>
-            </Link>
-            <Link
-              to='/admin/users'
-              className='flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium transition-colors'
-            >
-              <span className='material-symbols-outlined'>manage_accounts</span>
-              <span>User Management</span>
-            </Link>
-
-            <div className='pt-8 pb-2'>
-              <p className='px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider'>
-                Teams
-              </p>
-            </div>
-            <Link
-              to='/teams'
-              className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-            >
-              <span className='material-symbols-outlined'>groups</span>
-              <span>Manage Teams</span>
-            </Link>
-
-            <button
-              onClick={logout}
-              className='w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-            >
-              <span className='material-symbols-outlined'>logout</span>
-              <span>Logout</span>
-            </button>
-          </nav>
-
-          <div className='p-4 border-t border-slate-200 dark:border-slate-800'>
-            <div className='bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/10'>
-              <p className='text-xs font-bold text-primary mb-1 uppercase'>
-                Admin Panel
-              </p>
-              <p className='text-sm text-slate-600 dark:text-slate-300'>
-                Enterprise organizational controls enabled.
-              </p>
-            </div>
-          </div>
-        </aside>
+        <Sidebar />
 
         {/* ── Main ── */}
         <main className='flex-1 flex flex-col min-w-0 bg-background-light dark:bg-background-dark overflow-hidden'>

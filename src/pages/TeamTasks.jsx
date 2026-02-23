@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
+import Sidebar from '../components/Sidebar';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const getInitials = (name = '') =>
@@ -46,8 +47,7 @@ const PAGE_LIMIT = 10;
 const TeamTasks = () => {
   const navigate = useNavigate();
   const {
-    user: { name, role },
-    logout,
+    user: { role },
   } = useAuth();
 
   // ── stats (full fetch once) ──
@@ -204,103 +204,7 @@ const TeamTasks = () => {
       <ThemeToggle />
 
       {/* ── Sidebar ── */}
-      <aside className='w-64 border-r border-slate-200 dark:border-[#30363d] bg-white dark:bg-[#0d1117] flex flex-col shrink-0'>
-        <div className='p-6'>
-          <div className='flex items-center gap-3 mb-10'>
-            <div className='size-8 bg-primary rounded-lg flex items-center justify-center text-white'>
-              <span className='material-symbols-outlined text-xl'>
-                grid_view
-              </span>
-            </div>
-            <h2 className='text-slate-900 dark:text-white text-xl font-bold tracking-tight'>
-              TaskMaster
-            </h2>
-          </div>
-
-          <nav className='space-y-1'>
-            <Link
-              to='/dashboard'
-              className='flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 rounded-lg transition-colors group'
-            >
-              <span className='material-symbols-outlined text-slate-400 group-hover:text-primary'>
-                dashboard
-              </span>
-              <span className='font-medium'>Overview</span>
-            </Link>
-
-            {/* Active */}
-            <div className='flex items-center gap-3 px-4 py-3 bg-primary/5 dark:bg-primary/10 text-primary border-r-4 border-primary rounded-l-lg'>
-              <span className='material-symbols-outlined'>assignment</span>
-              <span className='font-medium'>Team Tasks</span>
-            </div>
-
-            <Link
-              to='/teams'
-              className='flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 rounded-lg transition-colors group'
-            >
-              <span className='material-symbols-outlined text-slate-400 group-hover:text-primary'>
-                group
-              </span>
-              <span className='font-medium'>Teams</span>
-            </Link>
-
-            <Link
-              to='/analytics'
-              className='flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 rounded-lg transition-colors group'
-            >
-              <span className='material-symbols-outlined text-slate-400 group-hover:text-primary'>
-                monitoring
-              </span>
-              <span className='font-medium'>Analytics</span>
-            </Link>
-
-            {role === 'admin' && (
-              <Link
-                to='/admin/users'
-                className='flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 rounded-lg transition-colors group'
-              >
-                <span className='material-symbols-outlined text-slate-400 group-hover:text-primary'>
-                  manage_accounts
-                </span>
-                <span className='font-medium'>User Management</span>
-              </Link>
-            )}
-          </nav>
-        </div>
-
-        {/* User card */}
-        <div className='mt-auto p-6 border-t border-slate-100 dark:border-[#30363d]'>
-          <div className='flex items-center gap-3'>
-            <div className='size-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-sm ring-2 ring-white dark:ring-[#0d1117] flex-shrink-0'>
-              {getInitials(name)}
-            </div>
-            <div className='overflow-hidden flex-1'>
-              <p className='text-sm font-bold text-slate-900 dark:text-white truncate'>
-                {name}
-              </p>
-              <p className='text-xs text-slate-500 truncate capitalize'>
-                {role}
-              </p>
-            </div>
-            <Link
-              to='/profile'
-              className='ml-auto text-slate-400 hover:text-primary transition-colors'
-              title='Profile &amp; Settings'
-            >
-              <span className='material-symbols-outlined text-sm'>
-                manage_accounts
-              </span>
-            </Link>
-            <button
-              onClick={logout}
-              className='text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors'
-              title='Logout'
-            >
-              <span className='material-symbols-outlined text-sm'>logout</span>
-            </button>
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* ── Main ── */}
       <main className='flex-1 overflow-y-auto bg-slate-50/50 dark:bg-[#0f1115]'>

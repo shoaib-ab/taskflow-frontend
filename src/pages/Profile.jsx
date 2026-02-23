@@ -20,6 +20,21 @@ const formatMemberSince = (iso) => {
   });
 };
 
+const copyToClipboard = async (text, setCopied) => {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  }
+  setCopied(true);
+  setTimeout(() => setCopied(false), 2000);
+};
+
 // ─── Sidebar nav items ────────────────────────────────────────────────────────
 const NAV_ITEMS = [
   { key: 'profile', label: 'Profile', icon: 'person' },
@@ -130,6 +145,9 @@ const Profile = () => {
   // ── Password form state ──
   const [pwForm, setPwForm] = useState({ current: '', new: '', confirm: '' });
   const [pwLoading, setPwLoading] = useState(false);
+
+  // ── User ID copy state ──
+  const [copiedId, setCopiedId] = useState(false);
 
   // ─── toast helper ───────────────────────────────────────────────────────────
   const showToast = (msg, type = 'success') => {
@@ -372,6 +390,34 @@ const Profile = () => {
                   />
                   <p className='text-[12px] text-slate-400'>
                     Email cannot be changed. Contact support if needed.
+                  </p>
+                </div>
+
+                {/* User ID */}
+                <div className='grid gap-2 max-w-md'>
+                  <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>
+                    Your User ID
+                  </label>
+                  <div className='flex items-center gap-2'>
+                    <input
+                      type='text'
+                      value={user?._id ?? ''}
+                      readOnly
+                      className='flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 px-4 py-2.5 text-sm text-slate-500 font-mono cursor-text select-all'
+                    />
+                    <button
+                      type='button'
+                      onClick={() => copyToClipboard(user?._id, setCopiedId)}
+                      className='shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors'
+                    >
+                      <span className='material-symbols-outlined text-[16px]'>
+                        {copiedId ? 'check' : 'content_copy'}
+                      </span>
+                      {copiedId ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <p className='text-[12px] text-slate-400'>
+                    Share this ID with your manager to be added to a team.
                   </p>
                 </div>
               </form>
