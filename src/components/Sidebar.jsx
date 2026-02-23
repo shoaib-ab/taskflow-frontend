@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Logo from './Logo';
 
 // ─── Navigation items ─────────────────────────────────────────────────────────
 const NAV_ITEMS = [
@@ -68,15 +69,8 @@ export default function Sidebar() {
   return (
     <aside className='w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101622] flex flex-col shrink-0'>
       {/* Logo */}
-      <div className='p-6 flex items-center gap-3'>
-        <div className='bg-primary p-1.5 rounded-lg flex items-center justify-center'>
-          <span className='material-symbols-outlined text-white text-2xl'>
-            layers
-          </span>
-        </div>
-        <h1 className='text-xl font-bold tracking-tight text-slate-900 dark:text-white'>
-          TaskMaster
-        </h1>
+      <div className='p-6'>
+        <Logo />
       </div>
 
       {/* Nav links */}
