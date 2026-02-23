@@ -1,17 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 import { useTasks } from '../context/TaskContext';
+import { useAuth } from '../context/AuthContext';
 import FullScreenLoader from '../components/FullScreenLoader';
+import Sidebar from '../components/Sidebar';
+import api from '../api/axios';
 
 const CreateTask = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isManager = user?.role === 'manager' || user?.role === 'admin';
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const { addTask, loading: contextLoading } = useTasks();
+
+  // Manager-only fields
+  const [teams, setTeams] = useState([]);
+  const [selectedTeamId, setSelectedTeamId] = useState('');
+  const [assignedTo, setAssignedTo] = useState('');
+  const [priority, setPriority] = useState('medium');
+  const [dueDate, setDueDate] = useState('');
+
+  // Fetch manager's teams
+  useEffect(() => {
+    if (!isManager) return;
+    api
+      .get('/teams')
+      .then((res) => setTeams(res.data.teams ?? []))
+      .catch(() => {});
+  }, [isManager]);
+
+  const selectedTeam = teams.find((t) => t._id === selectedTeamId);
+  const teamMembers = selectedTeam?.members ?? [];
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -31,9 +56,11 @@ const CreateTask = () => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    if (image) {
-      formData.append('image', image);
-    }
+    if (image) formData.append('image', image);
+    if (isManager && selectedTeamId) formData.append('teamId', selectedTeamId);
+    if (isManager && assignedTo) formData.append('assignedTo', assignedTo);
+    if (priority) formData.append('priority', priority);
+    if (dueDate) formData.append('dueDate', dueDate);
 
     try {
       await addTask(formData);
@@ -47,78 +74,25 @@ const CreateTask = () => {
     }
 
     console.log('Task Created:');
-    navigate('/dashboard');
+    const redirectTo =
+      user?.role === 'manager'
+        ? '/manager-dashboard'
+        : user?.role === 'admin'
+          ? '/admin'
+          : '/dashboard';
+    navigate(redirectTo);
   };
 
   return (
     <div>
       {contextLoading && <FullScreenLoader />}
-      <div className='bg-background-light dark:bg-background-dark text-[#0d121b] dark:text-gray-100 font-display transition-colors duration-200 min-h-screen flex flex-col'>
+      <div className='bg-background-light dark:bg-background-dark text-[#0d121b] dark:text-gray-100 font-display transition-colors duration-200 flex h-screen overflow-hidden'>
         <ThemeToggle />
-
-        {/* Top Navigation Bar */}
-        <header className='sticky top-0 z-50 w-full border-b border-[#e7ebf3] dark:border-gray-800 bg-white dark:bg-[#161e2d] px-4 md:px-10 py-3'>
-          <div className='mx-auto flex max-w-[1200px] items-center justify-between'>
-            <div className='flex items-center gap-8'>
-              <div className='flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white'>
-                  <span className='material-symbols-outlined text-xl'>
-                    grid_view
-                  </span>
-                </div>
-                <h2 className='text-lg font-bold leading-tight tracking-tight'>
-                  TaskMaster
-                </h2>
-              </div>
-              <nav className='hidden md:flex items-center gap-8'>
-                <Link
-                  className='text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors'
-                  to='/dashboard'
-                >
-                  Dashboard
-                </Link>
-                <Link className='text-sm font-medium text-primary' to='#'>
-                  Projects
-                </Link>
-                <Link
-                  className='text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors'
-                  to='#'
-                >
-                  Teams
-                </Link>
-                <Link
-                  className='text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors'
-                  to='#'
-                >
-                  Reports
-                </Link>
-              </nav>
-            </div>
-            <div className='flex items-center gap-4'>
-              <div className='hidden sm:flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1.5'>
-                <span className='material-symbols-outlined text-gray-400 text-sm mr-2'>
-                  search
-                </span>
-                <input
-                  className='bg-transparent border-none focus:ring-0 text-sm w-40 placeholder:text-gray-400'
-                  placeholder='Search tasks...'
-                  type='text'
-                />
-              </div>
-              <div
-                className='h-8 w-8 rounded-full bg-cover bg-center ring-2 ring-gray-100 dark:ring-gray-800'
-                style={{
-                  backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDqnRphzOg7VxITIskCGBjq8mM72oNfIxLMB9Ke3lfsj_zjXs0QWWOdxqrkZclubsX7mYjmfbDsnJJOvufGFxA3JAra5OVIDmy1dpxCIChD4k9gDoeUvFBz_2hlw6CGOvszj3hhfwWvDN5WOY2b4h0_wmKTpgJHEHDSaJZ71TOb_BjhkRu74SKycDpnahvc1i06XgRAYokWlHGzWA7HAKMCwaY_RdxGq-tiYQx9VvSRtCeWphinSAZG5m0H1A3LvACvmY6AXXjIPZc')",
-                }}
-              ></div>
-            </div>
-          </div>
-        </header>
+        <Sidebar />
 
         {/* Main Content */}
-        <main className='flex-1 flex flex-col items-center py-8 px-4'>
-          <div className='w-full max-w-[800px]'>
+        <main className='flex-1 overflow-y-auto py-8 px-8'>
+          <div className='w-full max-w-[800px] mx-auto'>
             {/* Breadcrumbs */}
             <nav className='flex items-center gap-2 mb-6 text-sm'>
               <Link
@@ -172,6 +146,91 @@ const CreateTask = () => {
                   <p className='text-xs text-gray-400'>
                     Be descriptive but concise.
                   </p>
+                </div>
+
+                {/* ── Manager-only: Team & Assign To ── */}
+                {isManager && (
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+                    {/* Team */}
+                    <div className='space-y-2'>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                        Team
+                      </label>
+                      <select
+                        value={selectedTeamId}
+                        onChange={(e) => {
+                          setSelectedTeamId(e.target.value);
+                          setAssignedTo('');
+                        }}
+                        className='w-full h-12 px-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none'
+                      >
+                        <option value=''>-- No team (personal) --</option>
+                        {teams.map((t) => (
+                          <option key={t._id} value={t._id}>
+                            {t.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Assign To */}
+                    <div className='space-y-2'>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                        Assign To
+                      </label>
+                      <select
+                        value={assignedTo}
+                        onChange={(e) => setAssignedTo(e.target.value)}
+                        disabled={!selectedTeamId}
+                        className='w-full h-12 px-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed'
+                      >
+                        <option value=''>-- Assign to yourself --</option>
+                        {teamMembers.map((m) => (
+                          <option key={m._id} value={m._id}>
+                            {m.name} ({m.email})
+                          </option>
+                        ))}
+                      </select>
+                      {!selectedTeamId && (
+                        <p className='text-xs text-gray-400'>
+                          Select a team first to see members.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Priority & Due Date (all roles) */}
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+                  {/* Priority */}
+                  <div className='space-y-2'>
+                    <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                      Priority
+                    </label>
+                    <select
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value)}
+                      className='w-full h-12 px-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none'
+                    >
+                      <option value='low'>Low</option>
+                      <option value='medium'>Medium</option>
+                      <option value='high'>High</option>
+                    </select>
+                  </div>
+
+                  {/* Due Date */}
+                  <div className='space-y-2'>
+                    <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                      Due Date
+                    </label>
+                    <input
+                      type='date'
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                      className='w-full h-12 px-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none'
+                    />
+                  </div>
                 </div>
 
                 {/* Description & Status Grid */}

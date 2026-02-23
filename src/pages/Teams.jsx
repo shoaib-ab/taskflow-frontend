@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
 import FullScreenLoader from '../components/FullScreenLoader';
+import Sidebar from '../components/Sidebar';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const PAGE_LIMIT = 8;
@@ -158,7 +159,8 @@ function MembersModal({ team, onClose, onUpdated, allUsers, role }) {
 
   const handleAdd = async () => {
     const userId = role === 'admin' ? selectedUserId : manualId.trim();
-    if (!userId) return setAddError('Please select or enter a user ID.');
+    if (!userId)
+      return setAddError('Please select a user or enter an ID / email.');
     setAdding(true);
     setAddError('');
     try {
@@ -285,12 +287,19 @@ function MembersModal({ team, onClose, onUpdated, allUsers, role }) {
                 ))}
               </select>
             ) : (
-              <input
-                value={manualId}
-                onChange={(e) => setManualId(e.target.value)}
-                placeholder='Paste user ID to add…'
-                className='flex-1 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none'
-              />
+              <div className='flex-1 flex flex-col gap-1'>
+                <input
+                  value={manualId}
+                  onChange={(e) => setManualId(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                  placeholder='Enter user ID or email…'
+                  className='w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none'
+                />
+                <p className='text-[11px] text-slate-400 px-1'>
+                  Ask the user to share their User&nbsp;ID or email from their
+                  Profile page.
+                </p>
+              </div>
             )}
             <button
               onClick={handleAdd}
@@ -316,8 +325,7 @@ function MembersModal({ team, onClose, onUpdated, allUsers, role }) {
 // ─── Teams Page ───────────────────────────────────────────────────────────────
 const Teams = () => {
   const {
-    user: { name, email, role },
-    logout,
+    user: { name, role },
   } = useAuth();
 
   const [teams, setTeams] = useState([]);
@@ -426,93 +434,7 @@ const Teams = () => {
       )}
 
       {/* ── Sidebar ── */}
-      <aside className='w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101622] flex flex-col shrink-0'>
-        <div className='p-6 flex items-center gap-3'>
-          <div className='bg-primary p-1.5 rounded-lg flex items-center justify-center'>
-            <span className='material-symbols-outlined text-white text-2xl'>
-              layers
-            </span>
-          </div>
-          <h1 className='text-xl font-bold tracking-tight text-slate-900 dark:text-white'>
-            TaskMaster
-          </h1>
-        </div>
-
-        <nav className='flex-1 px-4 space-y-1 mt-4'>
-          <Link
-            to='/dashboard'
-            className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-          >
-            <span className='material-symbols-outlined'>dashboard</span>
-            <span>Dashboard</span>
-          </Link>
-
-          {/* Active: Teams */}
-          <a className='flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium transition-colors'>
-            <span
-              className='material-symbols-outlined'
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              groups
-            </span>
-            <span>Teams</span>
-          </a>
-
-          <Link
-            to='/analytics'
-            className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-          >
-            <span className='material-symbols-outlined'>monitoring</span>
-            <span>Analytics</span>
-          </Link>
-
-          {role === 'admin' && (
-            <Link
-              to='/admin/users'
-              className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-            >
-              <span className='material-symbols-outlined'>manage_accounts</span>
-              <span>User Management</span>
-            </Link>
-          )}
-
-          <div className='pt-8 pb-2'>
-            <p className='px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider'>
-              Account
-            </p>
-          </div>
-
-          <Link
-            to='/profile'
-            className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors'
-          >
-            <span className='material-symbols-outlined'>manage_accounts</span>
-            <span>Profile &amp; Settings</span>
-          </Link>
-
-          <a
-            className='flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors cursor-pointer'
-            onClick={logout}
-          >
-            <span className='material-symbols-outlined'>logout</span>
-            <span>Logout</span>
-          </a>
-        </nav>
-
-        <div className='p-4 border-t border-slate-200 dark:border-slate-800'>
-          <div className='bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/10'>
-            <p className='text-xs font-bold text-primary mb-1 uppercase'>
-              Pro Plan
-            </p>
-            <p className='text-sm text-slate-600 dark:text-slate-300 mb-3'>
-              Upgrade for unlimited team members.
-            </p>
-            <button className='w-full py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors'>
-              Upgrade Now
-            </button>
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* ── Main Content ── */}
       <main className='flex-1 flex flex-col min-w-0 overflow-hidden'>

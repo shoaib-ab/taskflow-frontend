@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
+import Sidebar from '../components/Sidebar';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const getInitials = (name = '') =>
@@ -107,7 +108,6 @@ const TaskDetail = () => {
   const navigate = useNavigate();
   const {
     user: { name, role },
-    logout,
   } = useAuth();
 
   const [task, setTask] = useState(null);
@@ -260,121 +260,20 @@ const TaskDetail = () => {
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className='flex flex-col min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300'>
+    <div className='bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300 flex h-screen overflow-hidden'>
       <ThemeToggle />
-
-      {/* ── Top Navigation Bar ── */}
-      <header className='sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 lg:px-20 py-3 flex items-center justify-between'>
-        <div className='flex items-center gap-8'>
-          <div className='flex items-center gap-2 text-primary'>
-            <span className='material-symbols-outlined text-3xl font-bold'>
-              account_tree
-            </span>
-            <h2 className='text-slate-900 dark:text-white text-lg font-extrabold tracking-tight'>
-              TaskStream
-            </h2>
-          </div>
-          <div className='hidden md:flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-1.5 w-64'>
-            <span className='material-symbols-outlined text-slate-400 text-xl'>
-              search
-            </span>
-            <input
-              className='bg-transparent border-none outline-none focus:ring-0 text-sm w-full placeholder:text-slate-400 ml-2'
-              placeholder='Search tasks...'
-              type='text'
-            />
-          </div>
-        </div>
-
-        <div className='flex items-center gap-6'>
-          <nav className='hidden lg:flex items-center gap-6'>
-            <Link
-              to='/dashboard'
-              className='text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors'
-            >
-              Dashboard
-            </Link>
-            {(role === 'admin' || role === 'manager') && (
-              <Link
-                to='/manager-dashboard'
-                className='text-sm font-semibold text-primary'
-              >
-                Projects
-              </Link>
-            )}
-            {(role === 'admin' || role === 'manager') && (
-              <Link
-                to='/teams'
-                className='text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors'
-              >
-                Team
-              </Link>
-            )}
-            {(role === 'admin' || role === 'manager') && (
-              <Link
-                to='/analytics'
-                className='text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors'
-              >
-                Reports
-              </Link>
-            )}
-          </nav>
-          <div className='h-8 w-px bg-slate-200 dark:bg-slate-700' />
-          <div className='flex items-center gap-3'>
-            <button className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors'>
-              <span className='material-symbols-outlined'>notifications</span>
-            </button>
-            <button
-              onClick={logout}
-              className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors'
-              title='Logout'
-            >
-              <span className='material-symbols-outlined'>logout</span>
-            </button>
-            <div className='size-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-xs'>
-              {getInitials(name)}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Sidebar />
 
       {/* ── Main ── */}
-      <main className='flex-1 max-w-[1440px] mx-auto w-full px-6 lg:px-20 py-8'>
+      <main className='flex-1 overflow-y-auto px-6 lg:px-10 py-8'>
         {/* Breadcrumbs */}
         <nav className='flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400 mb-6 flex-wrap'>
-          {role === 'admin' || role === 'manager' ? (
-            <Link
-              to='/manager-dashboard'
-              className='hover:text-primary transition-colors'
-            >
-              Projects
-            </Link>
-          ) : (
-            <Link
-              to='/dashboard'
-              className='hover:text-primary transition-colors'
-            >
-              Dashboard
-            </Link>
-          )}
-          <span className='material-symbols-outlined text-base'>
-            chevron_right
-          </span>
-          {role === 'admin' || role === 'manager' ? (
-            <Link
-              to='/team-tasks'
-              className='hover:text-primary transition-colors'
-            >
-              All Tasks
-            </Link>
-          ) : (
-            <Link
-              to='/dashboard'
-              className='hover:text-primary transition-colors'
-            >
-              My Tasks
-            </Link>
-          )}
+          <Link
+            to='/dashboard'
+            className='hover:text-primary transition-colors'
+          >
+            Dashboard
+          </Link>
           <span className='material-symbols-outlined text-base'>
             chevron_right
           </span>

@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
+import Sidebar from '../components/Sidebar';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const getInitials = (name = '') =>
@@ -199,8 +200,7 @@ function DonutChart({ done, inProgress, pending }) {
 const Analytics = () => {
   const navigate = useNavigate();
   const {
-    user: { name, role },
-    logout,
+    user: { role },
   } = useAuth();
 
   const [loading, setLoading] = useState(true);
@@ -346,78 +346,11 @@ const Analytics = () => {
   ];
 
   return (
-    <div className='min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300'>
+    <div className='bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300 flex h-screen overflow-hidden'>
       <ThemeToggle />
+      <Sidebar />
 
-      {/* ── Top nav header ── */}
-      <header className='flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-10 py-3 sticky top-0 z-20'>
-        <div className='flex items-center gap-8'>
-          <div className='flex items-center gap-3 text-primary'>
-            <div className='size-7 bg-primary rounded flex items-center justify-center text-white'>
-              <span className='material-symbols-outlined text-sm'>
-                analytics
-              </span>
-            </div>
-            <h2 className='text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight'>
-              TaskInsights
-            </h2>
-          </div>
-        </div>
-
-        <nav className='hidden lg:flex items-center gap-9'>
-          <Link
-            to='/dashboard'
-            className='text-slate-600 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium'
-          >
-            Dashboard
-          </Link>
-          {(role === 'admin' || role === 'manager') && (
-            <Link
-              to='/team-tasks'
-              className='text-slate-600 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium'
-            >
-              Tasks
-            </Link>
-          )}
-          {(role === 'admin' || role === 'manager') && (
-            <Link
-              to='/manager-dashboard'
-              className='text-slate-600 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium'
-            >
-              Projects
-            </Link>
-          )}
-          <span className='text-primary text-sm font-bold border-b-2 border-primary pb-1'>
-            Insights
-          </span>
-          {(role === 'admin' || role === 'manager') && (
-            <Link
-              to='/teams'
-              className='text-slate-600 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium'
-            >
-              Team
-            </Link>
-          )}
-        </nav>
-
-        <div className='flex items-center gap-3'>
-          <button className='flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors'>
-            <span className='material-symbols-outlined'>notifications</span>
-          </button>
-          <button
-            onClick={logout}
-            className='flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors'
-            title='Logout'
-          >
-            <span className='material-symbols-outlined'>logout</span>
-          </button>
-          <div className='size-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary font-bold text-sm'>
-            {getInitials(name)}
-          </div>
-        </div>
-      </header>
-
-      <main className='flex-1 px-4 md:px-10 lg:px-24 xl:px-40 py-10'>
+      <main className='flex-1 overflow-y-auto px-8 py-10'>
         {/* Page heading */}
         <div className='flex flex-wrap justify-between items-end gap-4 mb-10'>
           <div>

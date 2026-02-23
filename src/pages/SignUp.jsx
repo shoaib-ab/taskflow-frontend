@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 import { useAuth } from '../context/AuthContext';
 import FullScreenLoader from '../components/FullScreenLoader';
+import Logo from '../components/Logo';
 
 const SignUp = () => {
   const { register } = useAuth();
@@ -53,7 +54,6 @@ const SignUp = () => {
     }
   };
 
-
   return (
     <div>
       {loading && <FullScreenLoader />}
@@ -65,18 +65,8 @@ const SignUp = () => {
           {/* Left Section: Registration Form */}
           <div className='flex-1 p-8 md:p-12 lg:p-16'>
             {/* Header/Logo */}
-            <div
-              onClick={() => navigate('/')}
-              className='flex items-center gap-2 mb-8 cursor-pointer'
-            >
-              <div className='size-8 bg-primary rounded-lg flex items-center justify-center text-white'>
-                <span className='material-symbols-outlined text-2xl'>
-                  task_alt
-                </span>
-              </div>
-              <h2 className='text-[#0d121b] dark:text-white text-xl font-bold tracking-tight'>
-                TaskFlow
-              </h2>
+            <div onClick={() => navigate('/')} className='mb-8 cursor-pointer'>
+              <Logo />
             </div>
 
             <div className='mb-10'>
@@ -212,7 +202,6 @@ const SignUp = () => {
                 {loading ? 'Creating account...' : 'Sign Up'}
                 <span className='material-symbols-outlined'>arrow_forward</span>
               </button>
-
             </form>
 
             <p className='mt-8 text-center text-slate-600 dark:text-slate-400'>

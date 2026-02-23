@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
+import Sidebar from '../components/Sidebar';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const getInitials = (name = '') =>
@@ -52,8 +53,7 @@ const PAGE_LIMIT = 10;
 const ManagerDashboard = () => {
   const navigate = useNavigate();
   const {
-    user: { name, email, role },
-    logout,
+    user: { role },
   } = useAuth();
 
   // Stats state (computed from all tasks, fetched once)
@@ -180,109 +180,7 @@ const ManagerDashboard = () => {
       <ThemeToggle />
 
       {/* ── Sidebar ── */}
-      <aside className='w-64 flex-shrink-0 bg-white dark:bg-[#0d1117] border-r border-slate-200 dark:border-[#30363d] flex flex-col'>
-        <div className='p-6 flex items-center gap-3'>
-          <div className='size-8 bg-primary rounded flex items-center justify-center text-white'>
-            <span className='material-symbols-outlined text-lg'>bolt</span>
-          </div>
-          <h1 className='text-xl font-bold tracking-tight'>TaskMaster</h1>
-        </div>
-
-        <nav className='flex-1 px-4 space-y-1 overflow-y-auto'>
-          <p className='px-2 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest'>
-            General
-          </p>
-
-          <Link
-            to='/dashboard'
-            className='flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors'
-          >
-            <span className='material-symbols-outlined text-xl'>dashboard</span>
-            <span className='text-sm font-medium'>My Tasks</span>
-          </Link>
-
-          {/* Active: Manager Dashboard */}
-          <a className='flex items-center gap-3 px-3 py-2.5 text-primary bg-primary/10 rounded-lg transition-colors'>
-            <span className='material-symbols-outlined text-xl'>analytics</span>
-            <span className='text-sm font-semibold'>Manager Dashboard</span>
-          </a>
-
-          <Link
-            to='/team-tasks'
-            className='flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors'
-          >
-            <span className='material-symbols-outlined text-xl'>
-              assignment
-            </span>
-            <span className='text-sm font-medium'>Team Tasks</span>
-          </Link>
-
-          <p className='px-2 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest'>
-            Management
-          </p>
-
-          <Link
-            to='/teams'
-            className='flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors'
-          >
-            <span className='material-symbols-outlined text-xl'>group</span>
-            <span className='text-sm font-medium'>Teams</span>
-          </Link>
-
-          <Link
-            to='/analytics'
-            className='flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors'
-          >
-            <span className='material-symbols-outlined text-xl'>
-              monitoring
-            </span>
-            <span className='text-sm font-medium'>Analytics</span>
-          </Link>
-
-          {role === 'admin' && (
-            <Link
-              to='/admin/users'
-              className='flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors'
-            >
-              <span className='material-symbols-outlined text-xl'>
-                manage_accounts
-              </span>
-              <span className='text-sm font-medium'>User Management</span>
-            </Link>
-          )}
-        </nav>
-
-        {/* User card */}
-        <div className='p-4 border-t border-slate-200 dark:border-[#30363d] mt-auto'>
-          <div className='flex items-center gap-3 p-2 bg-slate-100 dark:bg-white/5 rounded-xl'>
-            <div className='size-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0'>
-              {getInitials(name)}
-            </div>
-            <div className='flex-1 min-w-0'>
-              <p className='text-sm font-bold truncate'>{name}</p>
-              <p className='text-xs text-slate-500 truncate capitalize'>
-                {role}
-              </p>
-            </div>
-            <Link
-              to='/profile'
-              className='text-slate-500 hover:text-primary transition-colors'
-              title='Profile &amp; Settings'
-            >
-              <span className='material-symbols-outlined text-lg'>
-                manage_accounts
-              </span>
-            </Link>
-            <button
-              onClick={logout}
-              className='text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors'
-              title='Logout'
-            >
-              <span className='material-symbols-outlined text-lg'>logout</span>
-            </button>
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* ── Main Content ── */}
       <main className='flex-1 flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0f1115]'>
